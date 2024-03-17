@@ -20,7 +20,7 @@ export class ListaLivrosComponent implements OnDestroy {
     //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
     //para executar o observable é preciso chamar o subscribe
     this.subscription = this.service.buscar(this.campoBusca).subscribe({
-      next: retornoAPI => console.log(retornoAPI),
+      next: retornoAPI => console.log('ListaLivrosComponent: ',retornoAPI),
       error: erro => console.error(erro),
       complete: () => console.log('Observable completado')
     })
