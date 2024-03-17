@@ -14,11 +14,14 @@ export class ListaLivrosComponent {
   constructor(private service: LivroService) { }
 
   buscarLivros() {
+    //Através da subscription, que representa a execução de um Observable, é possível conectar observer e observable.
+    //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
     //para executar o observable é preciso chamar o subscribe
-    this.service.buscar(this.campoBusca).subscribe(
-      (retornoApi) => console.log(retornoApi), 
-      (error) => console.log(error)
-    )
+    this.service.buscar(this.campoBusca).subscribe({
+      next: retornoAPI => console.log(retornoAPI),
+      error: erro => console.error(erro),
+      complete: () => console.log('Observable completado')
+    })
   }
 
 }
