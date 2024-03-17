@@ -14,7 +14,8 @@ export class ListaLivrosComponent {
   constructor(private service: LivroService) { }
 
   buscarLivros() {
-    this.service.buscar(this.campoBusca)
+    //para executar o observable é preciso chamar o subscribe
+    this.service.buscar(this.campoBusca).subscribe((retornoApi) => console.log(retornoApi))
   }
 
 }
