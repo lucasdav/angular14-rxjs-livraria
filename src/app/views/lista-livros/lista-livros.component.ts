@@ -15,7 +15,10 @@ export class ListaLivrosComponent {
 
   buscarLivros() {
     //para executar o observable é preciso chamar o subscribe
-    this.service.buscar(this.campoBusca).subscribe((retornoApi) => console.log(retornoApi))
+    this.service.buscar(this.campoBusca).subscribe(
+      (retornoApi) => console.log(retornoApi), 
+      (error) => console.log(error)
+    )
   }
 
 }
