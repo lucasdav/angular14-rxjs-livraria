@@ -1,5 +1,7 @@
 # Buscante
 
+# Projeto contém pipes, async pipe para funcionalidade de componente buscador com filter switchMap e debounce para setar o tempo do keyup para executar a busca
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.3.
 
 ## Development server
