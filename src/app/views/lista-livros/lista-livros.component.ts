@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { Subscription, map, switchMap } from 'rxjs';
 import { Item, Livro } from 'src/app/models/interfaces';
 import { LivroVolumeInfo } from 'src/app/models/livroVolumeInfo';
 import { LivroService } from 'src/app/service/livro.service';
@@ -12,24 +13,31 @@ import { LivroService } from 'src/app/service/livro.service';
 export class ListaLivrosComponent implements OnDestroy {
 
   listaLivros: Livro[];
-  campoBusca = '';
+  campoBusca = new FormControl();
   subscription: Subscription;
   livro: Livro;
 
   constructor(private service: LivroService) { }
 
-  buscarLivros() {
-    //Através da subscription, que representa a execução de um Observable, é possível conectar observer e observable.
-    //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
-    //para executar o observable é preciso chamar o subscribe
-    this.subscription = this.service.buscar(this.campoBusca).subscribe({
-      next: (items) => {
-        this.listaLivros = this.livrosResultadoParaLivros(items);
-      },
-      error: erro => console.error(erro),
-      complete: () => console.log('Observable completado')
-    })
-  }
+  //abaixo o $ no final da variavel indica que é um observable, por convensão de nomenclatura
+  livrosEncontrados$ = this.campoBusca.valueChanges
+    .pipe(
+      switchMap((valorDigitado) => this.service.buscar(valorDigitado)),
+      map(items => this.listaLivros = this.livrosResultadoParaLivros(items))
+    )
+
+  // buscarLivros() {
+  //   //Através da subscription, que representa a execução de um Observable, é possível conectar observer e observable.
+  //   //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
+  //   //para executar o observable é preciso chamar o subscribe
+  //   this.subscription = this.service.buscar(this.campoBusca).subscribe({
+  //     next: (items) => {
+  //       this.listaLivros = this.livrosResultadoParaLivros(items);
+  //     },
+  //     error: erro => console.error(erro),
+  //     complete: () => console.log('Observable completado')
+  //   })
+  // }
 
   livrosResultadoParaLivros(items: Item[]): LivroVolumeInfo[] {
     return items.map(item => {
