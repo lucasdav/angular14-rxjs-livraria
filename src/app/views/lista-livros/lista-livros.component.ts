@@ -1,7 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Subscription, map, switchMap } from 'rxjs';
-import { Item, Livro } from 'src/app/models/interfaces';
+import { map, switchMap, tap } from 'rxjs';
+import { Item } from 'src/app/models/interfaces';
 import { LivroVolumeInfo } from 'src/app/models/livroVolumeInfo';
 import { LivroService } from 'src/app/service/livro.service';
 
@@ -10,43 +10,30 @@ import { LivroService } from 'src/app/service/livro.service';
   templateUrl: './lista-livros.component.html',
   styleUrls: ['./lista-livros.component.css']
 })
-export class ListaLivrosComponent implements OnDestroy {
+export class ListaLivrosComponent {
 
-  listaLivros: Livro[];
   campoBusca = new FormControl();
-  subscription: Subscription;
-  livro: Livro;
 
   constructor(private service: LivroService) { }
 
-  //abaixo o $ no final da variavel indica que é um observable, por convensão de nomenclatura
+  // Abaixo o $ no final da variavel indica que é um observable, por convensão de nomenclatura.
+  //Através da subscription, que representa a execução de um Observable, é possível conectar observer
+  // e observable.
+  //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
+  //Para executar o observable é preciso chamar o subscribe
   livrosEncontrados$ = this.campoBusca.valueChanges
     .pipe(
+      tap(() => console.log('ListaLivrosComponent: fluxo inicial da busca')),
+      // uso do switchMap para performance de busca, ele espera formar a palavra para buscar
       switchMap((valorDigitado) => this.service.buscar(valorDigitado)),
-      map(items => this.listaLivros = this.livrosResultadoParaLivros(items))
+      tap(() => console.log('ListaLivrosComponent: fluxo da requisicao ao servidor para a busca')),
+      map(items => this.livrosResultadoParaLivros(items))
     )
-
-  // buscarLivros() {
-  //   //Através da subscription, que representa a execução de um Observable, é possível conectar observer e observable.
-  //   //O Observer é uma coleção de callbacks que sabe escutar os valores entregues pelo Observable.
-  //   //para executar o observable é preciso chamar o subscribe
-  //   this.subscription = this.service.buscar(this.campoBusca).subscribe({
-  //     next: (items) => {
-  //       this.listaLivros = this.livrosResultadoParaLivros(items);
-  //     },
-  //     error: erro => console.error(erro),
-  //     complete: () => console.log('Observable completado')
-  //   })
-  // }
 
   livrosResultadoParaLivros(items: Item[]): LivroVolumeInfo[] {
     return items.map(item => {
       return new LivroVolumeInfo(item)
     })
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe()
   }
 
 }

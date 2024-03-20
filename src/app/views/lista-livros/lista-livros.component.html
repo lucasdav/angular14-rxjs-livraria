@@ -7,7 +7,8 @@
     </button>
   </div>
   <p>Busque por assunto, autoria, nome...</p>
-  <div class="container-card" *ngIf="listaLivros?.length > 0, else telaInicial">
+  <!-- abaixo uso do pipe | async para inscrever o objeto no subscribe e após o uso realizar o unsubscribe -->
+  <div class="container-card" *ngIf="livrosEncontrados$ | async as listaLivros, else telaInicial">
     <div *ngFor="let livro of listaLivros">
       <app-livro [livro]="livro"></app-livro>
     </div>
