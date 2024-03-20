@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap, throwError } from 'rxjs';
+import { EMPTY, catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap, throwError } from 'rxjs';
 import { Item } from 'src/app/models/interfaces';
 import { LivroVolumeInfo } from 'src/app/models/livroVolumeInfo';
 import { LivroService } from 'src/app/service/livro.service';
@@ -15,6 +15,7 @@ const PAUSA = 300;
 export class ListaLivrosComponent {
 
   campoBusca = new FormControl();
+  mensagemErro = '';
 
   constructor(private service: LivroService) { }
 
@@ -37,9 +38,13 @@ export class ListaLivrosComponent {
       tap(() => console.log('ListaLivrosComponent: fluxo da requisicao ao servidor para a busca')),
       map(items => this.livrosResultadoParaLivros(items)),
       // o operador catchError abaixo captura um erro, se houver
-      catchError(erro => {
-        console.log(erro)
-        return throwError(() => new Error('Ops ocorreu um erro'))
+      catchError(() => {
+        this.mensagemErro = 'Ops ocorreu um erro. Recarregue a aplicação';
+        //abaixo EMPTY encerra o ciclo de vida do observable, por isso é necessario recarregar
+        return EMPTY;
+        // console.log(erro)
+        // abaixo pode ser usado quando precisa tratar erro
+        // return throwError(() => new Error(this.mensagemErro = 'Ops ocorreu um erro. Recarregue a aplicação';))
       })
     )
 
